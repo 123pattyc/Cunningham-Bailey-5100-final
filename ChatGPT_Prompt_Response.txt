@@ -1,0 +1,101 @@
+ATTEMPT #1 - NO RESTRICTIONS
+
+Prompt: Please perform the following in R: Create a fictional dataset containing individual GPS coordinates (decimal degrees) of 100 coyotes. The GPS coordinates should be bound to within Texas. I next want to visualize this dataset by displaying them on a basemap.
+
+Response: Sure, you can use the ggplot2 package in R to create the visualization along with some sample GPS coordinates. Here's how you can do it...This code generates 100 fictional GPS coordinates within the boundaries of Texas and plots them on a basemap of Texas using ggplot2. Make sure you have the ggplot2 and maps packages installed in R.
+
+Result: resulted in basemap of Texas and GPS coordinates plotted on top, but far outside the bounds of the state.
+
+
+Revision prompt: The GPS coordinates you provided do not account for the shape of texas, so many gps points are falling outside the state. please revise the dataset to account for state lines.
+
+Revision response: You're right; we need to ensure that the generated GPS coordinates fall within the boundaries of Texas. We can achieve this by sampling from within the polygon that outlines the shape of Texas. Here's how you can do it using the sf and rnaturalearth packages to get a more accurate representation of Texas...This code will generate 100 random GPS coordinates within the boundaries of Texas and plot them on a map. Make sure you have the ggplot2, sf, and rnaturalearth packages installed in R.
+
+Code resulted in multiple errors involving incorrect functions, which ChatGPT could not mitigate. 
+
+Results from attempt #1 = FAIL
+
+
+
+ATTEMPT #2 - SPECIFY PACKAGES
+
+Prompt: Please perform the following in R: Create a fictional dataset containing individual GPS coordinates (decimal degrees) of 100 coyotes. The GPS coordinates should be bound to within Texas, and take into account the shape of the state. Then, I want to visualize this plot on a basemap of Texas that includes its surrounding states. Please limit your packages to tmap, sf, raster, and leaflet (choose whichever of these you will need).
+
+Response: To create the fictional dataset of GPS coordinates within Texas and visualize it on a basemap using the specified packages (sf, raster, and tmap), you can follow these steps...This code will generate 100 random GPS coordinates within the boundaries of Texas and visualize them on a basemap of Texas using the tmap package. Ensure that you have the shapefile for Texas (texas.shp) available. Let me know if you need further assistance!
+
+Result: resulted in error (Error: Object coyotes is neither from class sf, stars, Spatial, nor Raster.), which would be pasted into ChatGPT for clarification
+
+
+Revision prompt: i received this error: Error: Object coyotes is neither from class sf, stars, Spatial, nor Raster.
+
+Revision response: My apologies for the oversight. It seems I didn't convert the coyotes dataset to an sf object. Let's correct that...Now, the coyotes dataset is converted to an sf object, and the plot should work as expected. Let me know if you encounter any further issues!
+
+Code resulted in complete map, if not a bit barren. Results from attempt #2 = PASS
+
+
+
+ATTEMPT #3 - IMPROVE MAP
+
+Prompt: i want to add a raster layer that represents the land cover of texas (does not have to be accurate). please generate r code that creates a raster that contains 5 classes: forest, water, urban, field, desert. I then want to overlay the points we generated in the previous example to assess which land cover type each coyote is found within.
+
+Response: To create a raster representing land cover in Texas with 5 classes (forest, water, urban, field, desert), we can use the raster package. Here's the code to generate the raster and overlay the coyote points...This code creates a raster layer representing land cover in Texas with 5 classes and overlays the coyote points on it to assess which land cover type each coyote is found within. Let me know if you have any questions!
+
+Result: resulted in error - can't combine raster w/ polygon
+
+
+Revision prompt 1: i received this error when running the above code: Error: texas_shapefile consists of polygons, so it cannot accept tm_raster.
+
+error response: Apologies for the oversight. You're right; the tm_raster function is used for plotting raster data, but texas_shapefile is a polygon layer, so it cannot directly accept a raster layer.
+
+To overlay the coyote points on the raster, we'll need to plot the raster separately and then add the points on top of it. Here's how you can do it:
+
+
+Result: Code resulted in error due to the raster being way too large, which ChatGPT could not mitigate. Results from attempt #3 = FAIL
+
+
+
+
+ATTEMPT #4 - BREAK-UP
+
+Prompt: let's staart over: my goal is to create a raster that contains 5 classes ("forest", "water", "urban", "field", "desert") distributed across the extent of the Texas outline shapefile. The raster distribution does not have to be accurate. To reduce the size of the raster, alter each cell to a size of 10,000 km^2.
+
+Response: To achieve your goal, we'll create a raster with an extent matching the outline of Texas and a resolution of 10,000 km² per cell. Then, we'll assign each cell a land cover class randomly from the given classes ("forest", "water", "urban", "field", "desert"). Here's how you can do it:
+
+Result: code resulted in errors (datatype mismatch and file too large)
+
+
+Error prompt 1:i ran into this error: Error in setValues(x, value) : values must be numeric, logical or factor
+Error in .local(x, i = i, j = j, ..., value) : 
+  cannot replace values on this raster (it is too large
+
+Response: It seems that the raster layer raster_land_cover is too large to be created with random values directly. We can solve this issue by creating the raster layer with a smaller extent first, assigning random values to it, and then resizing it to match the extent of Texas. Let's modify the code accordingly:
+
+Result: similar error as before
+
+
+Revision prompt 1: instead of creating a raster for the entire state of texas, let's focus on a random 10,000 km^2 square within the state. Within that square, create a raster that contains 5 classes ("forest", "water", "urban", "field", "desert). Each cell can be 500 km^2.
+
+Response: Got it. We'll first randomly select a 10,000 km² square within the state of Texas, then create a raster within that square with cells of 500 km² each. Here's how you can do it:
+
+Result: several errors occurred, which were given to ChatGPT and revised code was generated - eventually a 10,000 km^2 raster was created in a random section of the Texas extent
+
+
+
+ATTEMPT #5 - BREAK-UP
+
+Prompt: let's leave out the raster generation part and assume that I have a separate raster file. Alter the code to read in the raster to R so I can plot the coyote points.
+
+Response: Certainly! If you already have a raster file representing land cover in Texas, you can skip the raster generation part and directly read in the raster file. Here's how you can modify the code to read the raster file and overlay the coyote points:
+
+Result: multiple errors due to polygon mismatch
+
+
+Error prompt 1: Error in setValues(x, value) : values must be numeric, logical or factor
+
+Response: The error indicates that the values assigned to the raster are not in the correct format. We need to assign numeric values to the raster cells instead of character strings. Let's correct that:
+
+
+Result: continued polygon mismatch...eventually narrowed down to likely CRS mismatch, but ChatGPT unable to parse
+
+
+This trend continued for multiple iterations - ChatGPT was not able to connect the polygons to a raster. We decided to call it at this point, as ChatGPT was not close to finding a solution.
